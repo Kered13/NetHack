@@ -1357,11 +1357,13 @@ postmov:
                         pline("%s eats through the iron bars.", Monnam(mtmp));
                     dissolve_bars(mtmp->mx, mtmp->my);
                     return 3;
-                } else if (flags.verbose && canseemon(mtmp))
-                    Norep("%s %s %s the iron bars.", Monnam(mtmp),
-                          /* pluralization fakes verb conjugation */
-                          makeplural(locomotion(ptr, "pass")),
-                          passes_walls(ptr) ? "through" : "between");
+				} else if (may_passwall(mtmp->mx, mtmp->my)) {
+					if (flags.verbose && canseemon(mtmp))
+						Norep("%s %s %s the iron bars.", Monnam(mtmp),
+							/* pluralization fakes verb conjugation */
+							makeplural(locomotion(ptr, "pass")),
+							passes_walls(ptr) ? "through" : "between");
+				}
             }
 
             /* possibly dig */

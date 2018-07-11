@@ -1,4 +1,4 @@
-/* NetHack 3.6	apply.c	$NHDT-Date: 1526769961 2018/05/19 22:46:01 $  $NHDT-Branch: NetHack-3.6.2 $:$NHDT-Revision: 1.246 $ */
+/* NetHack 3.6	apply.c	$NHDT-Date: 1519598527 2018/02/25 22:42:07 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.243 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -2196,11 +2196,13 @@ boolean quietly;
             You("cannot put the figurine there.");
         return FALSE;
     }
-    if (IS_ROCK(levl[x][y].typ)
+    if ((IS_ROCK(levl[x][y].typ) || IS_IRONBARS(levl[x][y].typ))
         && !(passes_walls(&mons[obj->corpsenm]) && may_passwall(x, y))) {
         if (!quietly)
             You("cannot place a figurine in %s!",
-                IS_TREE(levl[x][y].typ) ? "a tree" : "solid rock");
+                IS_TREE(levl[x][y].typ)
+                    ? "a tree" : 
+                    IS_IRONBARS(levl[x][y].typ) ? "iron bars" : "solid rock");
         return FALSE;
     }
     if (sobj_at(BOULDER, x, y) && !passes_walls(&mons[obj->corpsenm])

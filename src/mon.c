@@ -1,4 +1,4 @@
-/* NetHack 3.6	mon.c	$NHDT-Date: 1526132509 2018/05/12 13:41:49 $  $NHDT-Branch: master $:$NHDT-Revision: 1.252 $ */
+/* NetHack 3.6	mon.c	$NHDT-Date: 1522540516 2018/03/31 23:55:16 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.250 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Derek S. Ray, 2015. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1246,7 +1246,7 @@ long flag;
     int cnt = 0;
     uchar ntyp;
     uchar nowtyp;
-    boolean wantpool, poolok, lavaok, nodiag;
+    boolean wantpool, poolok, lavaok, nodiag, bar_ok;
     boolean rockok = FALSE, treeok = FALSE, thrudoor;
     int maxx, maxy;
     boolean poisongas_ok, in_poisongas;
@@ -1267,6 +1267,7 @@ long flag;
                      || breathless(mdat)) || resists_poison(mon));
     in_poisongas = ((gas_reg = visible_region_at(x,y)) != 0
                     && gas_reg->glyph == gas_glyph);
+	bar_ok = dmgtype(mdat, AD_CORR) || dmgtype(mdat, AD_RUST);
 
     if (flag & ALLOW_DIG) {
         struct obj *mw_tmp;
@@ -1309,7 +1310,9 @@ nexttry: /* eels prefer the water, but if there is no water nearby,
                 && !((IS_TREE(ntyp) ? treeok : rockok) && may_dig(nx, ny)))
                 continue;
             /* KMH -- Added iron bars */
-            if (ntyp == IRONBARS && !(flag & ALLOW_BARS))
+            if (ntyp == IRONBARS
+				&& !((flag & ALLOW_BARS) && may_passwall(nx, ny))
+				&& !((flag & ALLOW_BARS) && bar_ok && may_dig(nx, ny)))
                 continue;
             if (IS_DOOR(ntyp) && !(amorphous(mdat) || can_fog(mon))
                 && (((levl[nx][ny].doormask & D_CLOSED) && !(flag & OPENDOOR))

@@ -380,9 +380,10 @@ xchar x, y;
         (void) memset((genericptr_t) &context.digging, 0,
                       sizeof (struct dig_info));
 
-    if (!boulder && IS_ROCK(lev->typ) && !may_dig(x, y)) {
+    if (!boulder && (IS_ROCK(lev->typ) || IS_IRONBARS(lev->typ))
+		&& !may_dig(x, y)) {
         You("hurt your teeth on the %s.",
-            (lev->typ == IRONBARS)
+            (IS_IRONBARS(lev->typ))
                 ? "bars"
                 : IS_TREE(lev->typ)
                     ? "tree"
@@ -609,22 +610,23 @@ dosinkfall()
     float_vs_flight();
 }
 
-/* intended to be called only on ROCKs or TREEs */
+/* intended to be called only on ROCKs, TREEs, or IRONBARs */
 boolean
 may_dig(x, y)
 register xchar x, y;
 {
     struct rm *lev = &levl[x][y];
 
-    return (boolean) !((IS_STWALL(lev->typ) || IS_TREE(lev->typ))
+    return (boolean) !((IS_STWALL(lev->typ) || IS_TREE(lev->typ) || IS_IRONBARS(lev->typ))
                        && (lev->wall_info & W_NONDIGGABLE));
 }
 
+/* intended to be called only on ROCKs, TREEs, or IRONBARs */
 boolean
 may_passwall(x, y)
 register xchar x, y;
 {
-    return (boolean) !(IS_STWALL(levl[x][y].typ)
+    return (boolean) !((IS_STWALL(levl[x][y].typ) || IS_TREE(levl[x][y].typ) || IS_IRONBARS(levl[x][y].typ))
                        && (levl[x][y].wall_info & W_NONPASSWALL));
 }
 
@@ -715,9 +717,14 @@ int mode;
                 && still_chewing(x, y)) {
                 return FALSE;
             }
-            if (!(Passes_walls || passes_bars(youmonst.data))) {
-                if (mode == DO_MOVE && iflags.mention_walls)
-                    You("cannot pass through the bars.");
+            if (!((Passes_walls || passes_bars(youmonst.data))
+                  && may_passwall(x, y))) {
+                if (mode == DO_MOVE) {
+                    if (In_sokoban(&u.uz))
+                        pline_The("Sokoban bars resist your ability.");
+                    else if (iflags.mention_walls)
+                        You("cannot pass through the bars.");
+                }
                 return FALSE;
             }
         } else if (tunnels(youmonst.data) && !needspick(youmonst.data)) {

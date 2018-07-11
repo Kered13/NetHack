@@ -1294,7 +1294,8 @@ xchar mx, my, fx, fy;
                 continue;
             if (dist2(i, j, fx, fy) >= dist)
                 continue;
-            if (IS_ROCK(levl[i][j].typ) && !passes_walls(mon->data)
+            if ((IS_ROCK(levl[i][j].typ) || IS_IRONBARS(levl[i][j].typ) )
+                && !passes_walls(mon->data)
                 && (!may_dig(i, j) || !tunnels(mon->data)))
                 continue;
             if (IS_DOOR(levl[i][j].typ)
