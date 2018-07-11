@@ -637,7 +637,7 @@ int prop;
 
     for (y = max(y1, 0); y <= min(y2, ROWNO - 1); y++)
         for (x = max(x1, 0); x <= min(x2, COLNO - 1); x++)
-            if (IS_STWALL(levl[x][y].typ) || IS_TREE(levl[x][y].typ))
+            if (IS_STWALL(levl[x][y].typ) || IS_TREE(levl[x][y].typ) || IS_IRONBARS(levl[x][y].typ))
                 levl[x][y].wall_info |= prop;
 }
 
